@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Standalone mode bundles all runtime dependencies using
-  // @vercel/nft import tracing - no node_modules needed at runtime.
   output: 'standalone',
+  // Use Redis-backed cache handler for ISR and route handler caching.
+  cacheHandler: new URL('./cache-handler.mjs', import.meta.url).pathname,
+  // Disable default in-memory caching — Redis is the sole store.
+  cacheMaxMemorySize: 0,
 };
 
 export default nextConfig;

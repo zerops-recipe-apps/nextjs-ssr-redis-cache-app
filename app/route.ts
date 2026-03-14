@@ -1,27 +1,21 @@
-// Route Handler at / — used as both the health check and the
-// app's only UI. Returns a visual HTML card showing live DB status
-// and the greeting seeded by the migration.
+// Route Handler at / — serves a visual HTML card showing Redis cache
+// status and demonstrating cache simulation.
 //
-// force-dynamic disables Next.js route caching so every request
-// hits the database and reflects real connection state.
+// Each request writes a timestamp to Redis and reads it back, proving
+// the cache layer is alive. The Next.js cacheHandler (backed by Redis)
+// handles ISR caching for other routes; this one is force-dynamic so
+// it always shows fresh Redis status (and doesn't require Redis at
+// build time).
 export const dynamic = 'force-dynamic';
 
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { Pool } from 'pg';
+import { createClient } from 'redis';
 
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT) || 5432,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-  max: 5,
-  connectionTimeoutMillis: 3000,
-});
+const REDIS_URL =
+  process.env.REDIS_URL ||
+  `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}`;
 
-// Build metadata written by scripts/generate-build-info.js before
-// `next build` and deployed alongside the standalone bundle.
 interface BuildInfo {
   version: string;
   buildTime: string;
@@ -38,36 +32,45 @@ function getBuildInfo(): BuildInfo {
 
 export async function GET() {
   const buildInfo = getBuildInfo();
-  let greeting = '';
-  let dbStatus = '';
+  let redisStatus = '';
+  let cachedValue = '';
   let httpStatus = 200;
+  const now = new Date().toISOString();
 
+  let client;
   try {
-    const client = await pool.connect();
-    try {
-      const result = await client.query(
-        'SELECT message FROM greetings LIMIT 1'
-      );
-      greeting = result.rows[0]?.message ?? 'No greeting found';
-      dbStatus = 'Connected';
-    } finally {
-      client.release();
-    }
+    client = createClient({ url: REDIS_URL });
+    client.on('error', () => {}); // suppress background errors during connect
+    await client.connect();
+
+    // Write a simulated cache entry
+    await client.set('hello:cache', `Cached at ${now}`, { EX: 30 });
+
+    // Read it back
+    cachedValue = (await client.get('hello:cache')) ?? 'No cached value';
+    redisStatus = 'Connected';
+
+    await client.quit();
   } catch (err) {
-    greeting = 'Hello from Zerops!';
-    dbStatus = `ERROR: ${err instanceof Error ? err.message : String(err)}`;
+    cachedValue = 'Hello from Zerops!';
+    redisStatus = `ERROR: ${err instanceof Error ? err.message : String(err)}`;
     httpStatus = 503;
+    try {
+      await client?.quit();
+    } catch {
+      // already disconnected
+    }
   }
 
   const env = process.env.NODE_ENV ?? 'production';
-  const dbStatusColor = httpStatus === 200 ? '#4ade80' : '#f87171';
+  const statusColor = httpStatus === 200 ? '#4ade80' : '#f87171';
 
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Next.js · Zerops Hello World</title>
+  <title>Next.js · Zerops Redis Cache</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -143,7 +146,7 @@ export async function GET() {
       font-weight: 500;
       border-radius: 0 4px 4px 0;
     }
-    .db-status { color: ${dbStatusColor}; }
+    .status { color: ${statusColor}; }
     tr + tr td { margin-top: 2px; }
   </style>
 </head>
@@ -151,11 +154,11 @@ export async function GET() {
   <div class="card">
     <div class="logos">
       <span class="logo-next">Next.js</span>
-      <span class="logo-sep">×</span>
+      <span class="logo-sep">&times;</span>
       <span class="logo-zerops">Zerops</span>
     </div>
-    <h1>${greeting}</h1>
-    <p class="subtitle">Next.js running on Zerops SSR &mdash; Node.js at runtime.</p>
+    <h1>${cachedValue}</h1>
+    <p class="subtitle">Next.js with Redis cache on Zerops &mdash; ISR revalidates every 10 s.</p>
     <table>
       <tr>
         <td>Framework</td>
@@ -170,8 +173,12 @@ export async function GET() {
         <td>${buildInfo.buildTime}</td>
       </tr>
       <tr>
-        <td>Database</td>
-        <td class="db-status">${dbStatus}</td>
+        <td>Rendered at</td>
+        <td>${now}</td>
+      </tr>
+      <tr>
+        <td>Redis</td>
+        <td class="status">${redisStatus}</td>
       </tr>
     </table>
   </div>
