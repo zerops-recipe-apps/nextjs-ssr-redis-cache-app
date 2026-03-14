@@ -1,0 +1,5 @@
+node_modules/
+.next/
+build-info.json
+*.env.local
+.env*.local
