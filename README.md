@@ -1,4 +1,4 @@
-# Next.js SSR Hello World Recipe App
+# Next.js 16 SSR Hello World Recipe App
 
 <!-- #ZEROPS_EXTRACT_START:intro# -->
 A minimal Next.js 15 application using standalone output mode, connecting to PostgreSQL for server-side rendering. Demonstrates the complete SSR stack on Zerops: standalone build, idempotent database migration with `zsc execOnce`, and a live health check that queries the database on every request.

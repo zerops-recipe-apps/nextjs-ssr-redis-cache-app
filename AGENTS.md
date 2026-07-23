@@ -1,6 +1,6 @@
 # nextjs-ssr-redis-cache-app
 
-Next.js 15 SSR app with a Redis-backed custom cache handler for consistent ISR and route caching across multiple Zerops containers.
+Next.js 16 SSR app with a Redis-backed custom cache handler for consistent ISR and route caching across multiple Zerops containers.
 
 ## Zerops service facts
 
@@ -19,7 +19,7 @@ Next.js 15 SSR app with a Redis-backed custom cache handler for consistent ISR a
 
 ## Notes
 
-- `output: 'standalone'` + custom `cacheHandler` (`cache-handler.mjs`) enables consistent ISR/cache across multiple containers via Redis.
+- `next.config.ts` sets `output: 'standalone'` + custom `cacheHandler` (`cache-handler.mjs`) for consistent ISR/cache across multiple containers via Redis.
 - `cacheMaxMemorySize: 0` disables Next.js in-memory cache — Redis is the sole store.
 - Redis connection is lazy and degrades silently during `next build` (no Redis available at build time).
 - Do NOT cache `.next/cache` — Zerops cache restore causes EACCES on subsequent builds.

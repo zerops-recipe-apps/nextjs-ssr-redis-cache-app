@@ -1,5 +1,5 @@
 // Custom Next.js cache handler backed by Redis.
-// Used by `cacheHandler` in next.config.mjs for ISR and route handler
+// Used by `cacheHandler` in next.config.ts for ISR and route handler
 // response caching. Stores serialized cache entries in Redis with TTL.
 //
 // Connection is lazy — during `next build` there is no Redis server,
