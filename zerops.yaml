@@ -8,6 +8,8 @@ zerops:
 
       buildCommands:
         - npm ci --include=dev
+        # ignore-scripts=true in .npmrc skips npm prebuild — run explicitly.
+        - node scripts/generate-build-info.js
         # prebuild script (generate-build-info.js) writes version +
         # timestamp to build-info.json, then next build compiles the
         # standalone bundle with @vercel/nft import tracing.

@@ -23,4 +23,5 @@ Next.js 16 SSR app with a Redis-backed custom cache handler for consistent ISR a
 - `cacheMaxMemorySize: 0` disables Next.js in-memory cache — Redis is the sole store.
 - Redis connection is lazy and degrades silently during `next build` (no Redis available at build time).
 - Prod build uses `npm ci --include=dev` — Zerops sets `NODE_ENV=production`, which omits devDependencies (TypeScript) unless explicitly included.
+- `ignore-scripts=true` in `.npmrc` blocks npm `prebuild`; run `node scripts/generate-build-info.js` explicitly in `zerops.yaml` before `npm run build`.
 - Do NOT cache `.next/cache` — Zerops cache restore causes EACCES on subsequent builds.
