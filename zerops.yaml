@@ -4,10 +4,12 @@ zerops:
   # run the Next.js dev server interactively.
   - setup: prod
     build:
-      base: nodejs@22
+      base: nodejs@24
 
       buildCommands:
-        - npm ci
+        - npm ci --include=dev
+        # ignore-scripts=true in .npmrc skips npm prebuild — run explicitly.
+        - node scripts/generate-build-info.js
         # prebuild script (generate-build-info.js) writes version +
         # timestamp to build-info.json, then next build compiles the
         # standalone bundle with @vercel/nft import tracing.
@@ -37,7 +39,7 @@ zerops:
           path: /
 
     run:
-      base: nodejs@22
+      base: nodejs@24
 
       ports:
         - port: 3000
@@ -54,7 +56,7 @@ zerops:
 
   - setup: dev
     build:
-      base: nodejs@22
+      base: nodejs@24
       os: ubuntu
 
       buildCommands:
@@ -66,7 +68,7 @@ zerops:
         - node_modules
 
     run:
-      base: nodejs@22
+      base: nodejs@24
       os: ubuntu
 
       ports:

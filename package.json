@@ -1,6 +1,7 @@
 {
   "name": "nextjs-ssr-redis-cache-app",
   "version": "1.0.0",
+  "description": "Next.js SSR app with Redis cache on Zerops nodejs@24",
   "author": "Zerops",
   "license": "MIT",
   "repository": {
@@ -14,7 +15,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=24.0.0"
   },
   "scripts": {
     "prebuild": "node scripts/generate-build-info.js",
