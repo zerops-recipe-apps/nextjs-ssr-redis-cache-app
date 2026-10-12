@@ -25,11 +25,11 @@ zerops:
   # run the Next.js dev server interactively.
   - setup: prod
     build:
-      base: nodejs@22
+      base: nodejs@24
 
       buildCommands:
         # npm ci installs exact locked versions - reproducible builds.
-        - npm ci
+        - npm ci --include=dev
         # Bundle migrate.js + pg into a self-contained migrate.cjs
         # so initCommands can run it without NODE_PATH gymnastics.
         # pg is traced by @vercel/nft into .next/standalone/node_modules
@@ -65,7 +65,7 @@ zerops:
           path: /
 
     run:
-      base: nodejs@22
+      base: nodejs@24
 
       initCommands:
         # zsc execOnce ensures migration runs exactly once per
@@ -94,7 +94,7 @@ zerops:
 
   - setup: dev
     build:
-      base: nodejs@22
+      base: nodejs@24
       # Ubuntu gives a richer toolset for interactive SSH work
       # (git, curl, editors) compared to Alpine default.
       os: ubuntu
@@ -112,7 +112,7 @@ zerops:
         - node_modules
 
     run:
-      base: nodejs@22
+      base: nodejs@24
       os: ubuntu
 
       initCommands:

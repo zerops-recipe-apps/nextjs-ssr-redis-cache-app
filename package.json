@@ -6,9 +6,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zerops-recipe-apps/nextjs-ssr-redis-cache-app"
+    "url": "https://github.com/zerops-recipe-apps/nextjs-ssr-redis-cache-app.git"
   },
-  "homepage": "https://github.com/zerops-recipe-apps/nextjs-ssr-redis-cache-app",
+  "homepage": "https://app.zerops.io/recipes/nextjs-ssr-redis-cache",
   "bugs": {
     "url": "https://github.com/zerops-recipe-apps/nextjs-ssr-redis-cache-app/issues"
   },
@@ -24,15 +24,15 @@
     "start": "node .next/standalone/server.js"
   },
   "dependencies": {
-    "next": "^16.2.11",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "redis": "^5.0.0"
+    "next": "16.4.0",
+    "react": "19.3.0",
+    "react-dom": "19.2.8",
+    "redis": "5.12.1"
   },
   "devDependencies": {
-    "@types/node": "^26.1.1",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
+    "@types/node": "26.1.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "typescript": "5.9.3"
   },
   "overrides": {
@@ -41,10 +41,12 @@
   },
   "keywords": [
     "nextjs",
+    "react",
     "zerops",
     "ssr",
     "standalone",
     "redis",
-    "cache"
+    "cache",
+    "hello-world"
   ]
 }
